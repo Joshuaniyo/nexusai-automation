@@ -11,12 +11,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import { getBaseUrl, getEmailRedirectUrl } from '@/lib/env';
 
 function AuthForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const signup = searchParams.get('signup') === 'true';
   const redirect = searchParams.get('redirect') || '/dashboard';
+  const errorParam = searchParams.get('error');
 
   const [tab, setTab] = useState<'signin' | 'signup'>(signup ? 'signup' : 'signin');
   const [loading, setLoading] = useState(false);
@@ -25,25 +27,38 @@ function AuthForm() {
   const [resetEmail, setResetEmail] = useState('');
   const [resetSent, setResetSent] = useState(false);
 
+  // Show error from OAuth callback if any
+  useEffect(() => {
+    if (errorParam) {
+      toast.error('Authentication failed. Please try again.');
+    }
+  }, [errorParam]);
+
   // Check for OAuth callback on mount
   useEffect(() => {
     const handleOAuthCallback = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         toast.success('Welcome!');
-        window.location.href = redirect;
+        router.refresh();
+        router.push(redirect);
       }
     };
     handleOAuthCallback();
-  }, [redirect]);
+  }, [router, redirect]);
 
   async function handleGoogleSignIn() {
     setGoogleLoading(true);
     try {
+      const baseUrl = getBaseUrl();
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth?redirect=${encodeURIComponent(redirect)}`,
+          redirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent(redirect)}`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       });
       if (error) {
@@ -74,9 +89,8 @@ function AuthForm() {
 
       if (data.user) {
         toast.success('Welcome back!');
-        setTimeout(() => {
-          window.location.href = redirect;
-        }, 500);
+        router.refresh();
+        router.push(redirect);
       }
     } catch (err) {
       toast.error('Sign in failed. Please try again.');
@@ -104,7 +118,7 @@ function AuthForm() {
         password,
         options: {
           data: { full_name: name, tier: 'free' },
-          emailRedirectTo: `${window.location.origin}/auth`,
+          emailRedirectTo: getEmailRedirectUrl('/auth'),
         },
       });
 
@@ -116,9 +130,8 @@ function AuthForm() {
 
       if (data.user) {
         toast.success('Account created! Redirecting...');
-        setTimeout(() => {
-          window.location.href = redirect;
-        }, 500);
+        router.refresh();
+        router.push(redirect);
       }
     } catch (err) {
       toast.error('Sign up failed. Please try again.');
@@ -130,7 +143,7 @@ function AuthForm() {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: `${window.location.origin}/auth`,
+      redirectTo: getEmailRedirectUrl('/auth'),
     });
     if (error) {
       toast.error(error.message);
