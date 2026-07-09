@@ -14,7 +14,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Create Supabase server client for middleware
+  let response = NextResponse.next({
+    request: { headers: request.headers },
+  });
+
+  // Create Supabase server client for middleware — must set cookies on response
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -23,14 +27,22 @@ export async function middleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll() {
-          // Can't set cookies in middleware response directly
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value);
+          });
+          response = NextResponse.next({
+            request: { headers: request.headers },
+          });
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
+          });
         },
       },
     }
   );
 
-  // Get session
+  // Refreshes the session and updates cookies if needed
   const { data: { session } } = await supabase.auth.getSession();
 
   const isAuthenticated = !!session;
@@ -47,17 +59,20 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users from auth page to dashboard
   if (isAuthPage && isAuthenticated) {
     const redirectTo = request.nextUrl.searchParams.get('redirect') || '/dashboard';
-    return NextResponse.redirect(new URL(redirectTo, request.url));
+    // Validate redirect target to prevent open redirects
+    const safeRedirect = redirectTo.startsWith('/dashboard') ? redirectTo : '/dashboard';
+    return NextResponse.redirect(new URL(safeRedirect, request.url));
   }
 
-  // Add security headers
-  const response = NextResponse.next();
-
-  // Prevent clickjacking
+  // Security headers
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-XSS-Protection', '1; mode=block');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set(
+    'Strict-Transport-Security',
+    'max-age=63072000; includeSubDomains; preload'
+  );
 
   return response;
 }

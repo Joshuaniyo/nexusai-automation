@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import { getBaseUrl, getEmailRedirectUrl } from '@/lib/env';
+import { getBaseUrl } from '@/lib/env';
 
 function AuthForm() {
   const searchParams = useSearchParams();
@@ -113,12 +113,14 @@ function AuthForm() {
     }
 
     try {
+      const callbackUrl = `${getBaseUrl()}/auth/callback?next=${encodeURIComponent(redirect)}`;
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: { full_name: name, tier: 'free' },
-          emailRedirectTo: getEmailRedirectUrl('/auth'),
+          emailRedirectTo: callbackUrl,
         },
       });
 
@@ -128,10 +130,23 @@ function AuthForm() {
         return;
       }
 
-      if (data.user) {
+      if (data.session) {
+        // Email confirmation is off — user is immediately signed in
         toast.success('Account created! Redirecting...');
         router.refresh();
         router.push(redirect);
+      } else if (data.user && !data.session) {
+        // Email confirmation is on — tell user to check their email,
+        // OR Supabase returned user without session (auto sign-in after confirm)
+        // Try to sign in immediately in case email confirm is disabled
+        const { data: signInData } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInData.session) {
+          toast.success('Account created! Redirecting...');
+          router.refresh();
+          router.push(redirect);
+        } else {
+          toast.success('Check your email to confirm your account!');
+        }
       }
     } catch (err) {
       toast.error('Sign up failed. Please try again.');
@@ -143,7 +158,7 @@ function AuthForm() {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: getEmailRedirectUrl('/auth'),
+      redirectTo: `${getBaseUrl()}/auth/callback?next=/dashboard`,
     });
     if (error) {
       toast.error(error.message);
