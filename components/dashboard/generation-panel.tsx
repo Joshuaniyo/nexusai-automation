@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Zap, Globe, Crown, Loader2, Target, ChevronRight, AlertTriangle, ArrowRight } from 'lucide-react';
+import { useCheckout } from '@/hooks/use-checkout';
 
 interface Props {
   assets: Asset[];
@@ -32,6 +33,7 @@ export function GenerationPanel({ assets, isGenerating, onGenerate, tier, assetC
   const [keyword, setKeyword] = useState('');
   const [selectedAsset, setSelectedAsset] = useState('none');
   const router = useRouter();
+  const { loading: checkoutLoading, startCheckout } = useCheckout();
 
   const assetsRemaining = isPremium ? Infinity : Math.max(0, MAX_FREE_ASSETS - assetCount);
   const canAddMoreAssets = isPremium || assetCount < MAX_FREE_ASSETS;
@@ -75,8 +77,17 @@ export function GenerationPanel({ assets, isGenerating, onGenerate, tier, assetC
               <p style={{ fontSize: 10, color: 'hsl(215,16%,60%)', margin: '0 0 8px 0' }}>
                 You&apos;ve reached the {MAX_FREE_ASSETS} asset limit. Upgrade to Premium for unlimited assets.
               </p>
-              <Button size="sm" onClick={() => router.push('/api/billing/checkout')} className="h-6 text-[10px] bg-orange-500 hover:bg-orange-600 text-white">
-                Upgrade Now <ArrowRight className="w-3 h-3 ml-1" />
+              <Button size="sm" onClick={() => startCheckout()} disabled={checkoutLoading} className="h-6 text-[10px] bg-orange-500 hover:bg-orange-600 text-white">
+                {checkoutLoading ? (
+                  <>
+                    <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                    Redirecting...
+                  </>
+                ) : (
+                  <>
+                    Upgrade Now <ArrowRight className="w-3 h-3 ml-1" />
+                  </>
+                )}
               </Button>
             </div>
           </div>

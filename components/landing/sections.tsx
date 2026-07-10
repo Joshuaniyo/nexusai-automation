@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  Zap, Layout, Code2, Share2, Check, ArrowRight, Menu, X, Sparkles
+  Zap, Layout, Code2, Share2, Check, ArrowRight, Menu, X, Sparkles, Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useCheckout } from '@/hooks/use-checkout';
 
 const navLinks = [
   { href: '/#features', label: 'Features' },
@@ -238,6 +239,7 @@ export function Features() {
 
 export function Pricing() {
   const router = useRouter();
+  const { loading: checkoutLoading, startCheckout } = useCheckout();
 
   return (
     <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent via-[hsl(220,16%,8%)] to-transparent">
@@ -300,9 +302,19 @@ export function Pricing() {
                 ))}
               </ul>
               <Button className="w-full mt-6 bg-orange-500 hover:bg-orange-600 text-white font-medium"
-                onClick={() => router.push('/api/billing/checkout')}>
-                Upgrade Now
-                <ArrowRight className="ml-2 w-4 h-4" />
+                disabled={checkoutLoading}
+                onClick={() => startCheckout()}>
+                {checkoutLoading ? (
+                  <>
+                    <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                    Redirecting...
+                  </>
+                ) : (
+                  <>
+                    Upgrade Now
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </>
+                )}
               </Button>
             </CardContent>
           </Card>

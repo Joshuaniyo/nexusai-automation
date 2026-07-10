@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { cn } from '@/lib/utils';
-import { Zap, Globe, History, Settings, Sparkles, Crown, ChevronRight, LogOut, ExternalLink } from 'lucide-react';
+import { Zap, Globe, History, Settings, Sparkles, Crown, ChevronRight, LogOut, ExternalLink, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useCheckout } from '@/hooks/use-checkout';
 
 const nav = [
   { href: '/dashboard', label: 'Generate', icon: Zap, exact: true },
@@ -18,10 +19,11 @@ export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, tier, isPremium, signOut, loading } = useAuth();
+  const { loading: checkoutLoading, startCheckout } = useCheckout();
 
   async function handleUpgrade() {
     if (isPremium) return;
-    router.push('/api/billing/checkout');
+    await startCheckout();
   }
 
   if (loading) {
@@ -103,10 +105,20 @@ export function Sidebar() {
             <Button
               size="sm"
               onClick={handleUpgrade}
+              disabled={checkoutLoading}
               className="w-full h-7 text-xs border-0 bg-orange-500 hover:bg-orange-600 text-white"
             >
-              <Crown className="w-3 h-3 mr-1.5" />
-              Upgrade to Premium
+              {checkoutLoading ? (
+                <>
+                  <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
+                  Redirecting...
+                </>
+              ) : (
+                <>
+                  <Crown className="w-3 h-3 mr-1.5" />
+                  Upgrade to Premium
+                </>
+              )}
             </Button>
           ) : (
             <div className="text-xs text-center text-[hsl(215,16%,47%)] py-1">

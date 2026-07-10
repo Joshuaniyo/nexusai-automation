@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Globe, Plus, MoreHorizontal, Pencil, Trash2, Webhook, AlertCircle, CheckCircle2, Pause, Play, Loader2, AlertTriangle, Crown, ArrowRight } from 'lucide-react';
+import { useCheckout } from '@/hooks/use-checkout';
 
 const CMS_TYPES = ['WordPress', 'Webflow', 'Shopify', 'Ghost', 'Contentful', 'Strapi', 'Sanity', 'HubSpot CMS', 'Squarespace', 'Wix', 'Custom'];
 const CMS_COLORS: Record<string, string> = {
@@ -30,6 +31,7 @@ const MAX_FREE_ASSETS = 3;
 export default function AssetsPage() {
   const { user, isPremium } = useAuth();
   const router = useRouter();
+  const { loading: checkoutLoading, startCheckout } = useCheckout();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -131,8 +133,17 @@ export default function AssetsPage() {
             <p style={{ fontSize: 13, fontWeight: 600, color: 'hsl(38,92%,65%)', margin: '0 0 2px 0' }}>Asset Limit Reached</p>
             <p style={{ fontSize: 11, color: 'hsl(215,16%,60%)', margin: 0 }}>You&apos;ve reached the {MAX_FREE_ASSETS} asset limit. Upgrade to Premium for unlimited assets.</p>
           </div>
-          <Button size="sm" onClick={() => router.push('/api/billing/checkout')} className="bg-orange-500 hover:bg-orange-600 text-white h-7">
-            <Crown className="w-3 h-3 mr-1.5" /> Upgrade
+          <Button size="sm" onClick={() => startCheckout()} disabled={checkoutLoading} className="bg-orange-500 hover:bg-orange-600 text-white h-7">
+            {checkoutLoading ? (
+              <>
+                <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
+                Redirecting...
+              </>
+            ) : (
+              <>
+                <Crown className="w-3 h-3 mr-1.5" /> Upgrade
+              </>
+            )}
           </Button>
         </div>
       )}

@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Sparkles, Check, Zap, Building, ArrowRight, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Sparkles, Check, Zap, Building, ArrowRight, ChevronDown, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useCheckout } from '@/hooks/use-checkout';
 
 const plans = [
   {
@@ -90,6 +91,7 @@ const faqs = [
 export default function PricingPage() {
   const router = useRouter();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { loading: checkoutLoading, startCheckout } = useCheckout();
 
   return (
     <div className="min-h-screen bg-[hsl(220,16%,6%)]">
@@ -167,11 +169,28 @@ export default function PricingPage() {
                     plan.popular
                       ? 'bg-orange-500 hover:bg-orange-600 text-white'
                       : 'bg-[hsl(220,14%,12%)] hover:bg-[hsl(220,14%,16%)] text-white border border-[hsl(220,14%,20%)]'
-                  }`}
-                  onClick={() => router.push(plan.href)}
+                  }`
+                  }
+                  disabled={plan.popular && checkoutLoading}
+                  onClick={() => {
+                    if (plan.popular) {
+                      startCheckout();
+                    } else {
+                      router.push(plan.href);
+                    }
+                  }}
                 >
-                  {plan.cta}
-                  <ArrowRight className="ml-2 w-4 h-4" />
+                  {plan.popular && checkoutLoading ? (
+                    <>
+                      <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                      Redirecting...
+                    </>
+                  ) : (
+                    <>
+                      {plan.cta}
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </>
+                  )}
                 </Button>
               </CardContent>
             </Card>
