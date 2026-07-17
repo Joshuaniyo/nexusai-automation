@@ -54,6 +54,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
+        {/* Google tag (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-KEXN8EHWJ1" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-KEXN8EHWJ1');
+            `,
+          }}
+        />
       </head>
       <body className={inter.className} style={{ backgroundColor: 'hsl(220,16%,6%)', color: 'hsl(210,20%,95%)', margin: 0 }}>
         {children}
