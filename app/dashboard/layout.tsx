@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { Sidebar } from '@/components/dashboard/sidebar';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Menu, Sparkles } from 'lucide-react';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, loading } = useAuth();
@@ -44,12 +44,24 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
   return (
     <AuthProvider>
       <ProtectedRoute>
-        <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', backgroundColor: 'hsl(220,16%,6%)' }}>
-          <Sidebar />
-          <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <div className="flex h-[100dvh] w-full overflow-hidden bg-[hsl(220,16%,6%)]">
+          <div className="hidden h-full w-60 shrink-0 lg:block"><Sidebar /></div>
+          <div className={`fixed inset-0 z-50 transition lg:hidden ${mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`} aria-hidden={!mobileOpen}>
+            <button aria-label="Close navigation" onClick={() => setMobileOpen(false)} className={`absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity ${mobileOpen ? 'opacity-100' : 'opacity-0'}`} />
+            <div className={`relative h-full w-[min(86vw,20rem)] shadow-2xl transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+              <Sidebar mobile onNavigate={() => setMobileOpen(false)} />
+            </div>
+          </div>
+          <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
+            <header className="flex h-14 shrink-0 items-center justify-between border-b border-white/10 px-4 lg:hidden">
+              <button onClick={() => setMobileOpen(true)} className="rounded-lg p-2 text-slate-300 hover:bg-white/5" aria-label="Open navigation"><Menu className="h-5 w-5" /></button>
+              <span className="flex items-center gap-2 text-sm font-semibold text-white"><Sparkles className="h-4 w-4 text-cyan-400" />NexusAI</span>
+              <span className="w-9" />
+            </header>
             {children}
           </main>
         </div>

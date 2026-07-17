@@ -25,6 +25,7 @@ export interface ContentHistory {
 }
 
 export interface GenerationResult {
+  package_id: string;
   blog_title: string;
   blog_content: string;
   meta_description: string;
@@ -32,6 +33,16 @@ export interface GenerationResult {
   schema_json: Record<string, unknown>;
   social_linkedin: string;
   social_x: string;
+  social_instagram: string;
+  social_posts: {
+    x: { text: string; thread: string[]; image_prompt: string; image_url: string };
+    linkedin: { text: string; image_prompt: string; image_url: string };
+    instagram: { caption: string; alt_text: string; image_prompt: string; image_url: string };
+  };
+  media_urls: { blog: string; x: string; linkedin: string; instagram: string };
+  visual_prompts: { blog: string; x: string; linkedin: string; instagram: string };
+  quality_audit: Record<string, unknown>;
+  agent_trace: Array<{ id: string; name: string; keySlot: string; durationMs: number; status: string }>;
 }
 
 export type UserTier = 'free' | 'premium';

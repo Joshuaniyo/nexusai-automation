@@ -45,24 +45,6 @@ const plans = [
     popular: true,
     href: '/api/billing/checkout',
   },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: 'tailored',
-    description: 'For large organizations',
-    features: [
-      'Everything in Premium',
-      'Dedicated account manager',
-      'Custom integrations',
-      'SLA guarantee',
-      'On-premise deployment option',
-      'Advanced security features',
-      'Custom training & onboarding',
-    ],
-    cta: 'Contact Sales',
-    popular: false,
-    href: '/contact',
-  },
 ];
 
 const faqs = [
@@ -72,7 +54,7 @@ const faqs = [
   },
   {
     q: 'What payment methods do you accept?',
-    a: 'We accept all major credit cards through Dodo Payments, our Merchant of Record. Payment processing is secure and PCI-compliant.',
+    a: 'We accept all major credit cards through Lemon Squeezy, our Merchant of Record. Payment processing is secure and PCI-compliant.',
   },
   {
     q: 'Is there a free trial for Premium?',
@@ -91,6 +73,7 @@ const faqs = [
 export default function PricingPage() {
   const router = useRouter();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const { loading: checkoutLoading, startCheckout } = useCheckout();
 
   return (
@@ -125,7 +108,21 @@ export default function PricingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+        <div className="mb-12 flex flex-col items-center gap-3">
+          <div className="relative grid w-full max-w-xs grid-cols-2 rounded-full border border-white/10 bg-[hsl(220,14%,12%)] p-1 shadow-xl">
+            <span className={`absolute bottom-1 top-1 w-[calc(50%-4px)] rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 shadow-lg transition-transform duration-300 ${billingCycle === 'yearly' ? 'translate-x-full' : 'translate-x-0'}`} />
+            {(['monthly', 'yearly'] as const).map((cycle) => (
+              <button key={cycle} onClick={() => setBillingCycle(cycle)} className={`relative z-10 rounded-full px-4 py-2 text-sm font-semibold capitalize transition-colors ${billingCycle === cycle ? 'text-white' : 'text-slate-400 hover:text-white'}`}>
+                {cycle}
+              </button>
+            ))}
+          </div>
+          <span className={`rounded-full border px-3 py-1 text-xs font-bold transition-all ${billingCycle === 'yearly' ? 'scale-100 border-emerald-400/30 bg-emerald-400/10 text-emerald-300 opacity-100' : 'scale-95 border-transparent text-slate-500 opacity-60'}`}>
+            Save 40% - Best Value
+          </span>
+        </div>
+
+        <div className="mx-auto mb-20 grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
           {plans.map((plan, idx) => (
             <Card
               key={idx}
@@ -153,8 +150,9 @@ export default function PricingPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <span className="text-4xl font-bold text-white">{plan.price}</span>
-                  <span className="text-[hsl(215,16%,50%)]">/{plan.period}</span>
+                  <span className="text-4xl font-bold text-white">{plan.popular ? (billingCycle === 'yearly' ? '$200' : '$29') : plan.price}</span>
+                  <span className="text-[hsl(215,16%,50%)]">/{plan.popular ? (billingCycle === 'yearly' ? 'year' : 'month') : plan.period}</span>
+                  {plan.popular && billingCycle === 'yearly' && <p className="mt-2 text-xs font-medium text-emerald-400">Equivalent to $16.67/month</p>}
                 </div>
                 <ul className="space-y-3">
                   {plan.features.map((feature, i) => (
@@ -174,7 +172,7 @@ export default function PricingPage() {
                   disabled={plan.popular && checkoutLoading}
                   onClick={() => {
                     if (plan.popular) {
-                      startCheckout();
+                      startCheckout(billingCycle);
                     } else {
                       router.push(plan.href);
                     }

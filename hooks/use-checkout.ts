@@ -1,25 +1,14 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { DodoPayments } from 'dodopayments-checkout';
-import type { CheckoutEvent } from 'dodopayments-checkout';
 import { supabase } from '@/lib/supabase';
 
-let dodoInitialized = false;
-
-function ensureDodoInitialized() {
-  if (dodoInitialized || typeof window === 'undefined') return;
-  const mode = (process.env.NEXT_PUBLIC_DODO_MODE as 'test' | 'live') || 'live';
-  DodoPayments.Initialize({
-    mode,
-    displayType: 'overlay',
-    onEvent: (event: CheckoutEvent) => {
-      if (event.event_type === 'checkout.closed') {
-        // Overlay closed — callers manage their own UI state
-      }
-    },
-  });
-  dodoInitialized = true;
+declare global {
+  interface Window {
+    LemonSqueezy?: {
+      Url: { Open: (url: string) => void };
+    };
+  }
 }
 
 export function useCheckout() {
@@ -29,40 +18,49 @@ export function useCheckout() {
 
   useEffect(() => {
     mountedRef.current = true;
-    ensureDodoInitialized();
+
+    if (!document.querySelector('script[data-lemonsqueezy]')) {
+      const script = document.createElement('script');
+      script.src = 'https://app.lemonsqueezy.com/js/lemon.js';
+      script.defer = true;
+      script.dataset.lemonsqueezy = 'true';
+      document.head.appendChild(script);
+    }
+
     return () => {
       mountedRef.current = false;
     };
   }, []);
 
-  const startCheckout = useCallback(async () => {
+  const startCheckout = useCallback(async (billingCycle: 'monthly' | 'yearly' = 'monthly') => {
     if (loading) return;
     setLoading(true);
     setError(null);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user;
+
+      if (!session?.user) {
+        window.location.assign('/auth?redirect=/pricing');
+        return;
+      }
 
       const response = await fetch('/api/billing/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user?.id || 'guest',
-          email: user?.email || '',
-          name: (user?.user_metadata?.full_name as string) || '',
-        }),
+        body: JSON.stringify({ billingCycle }),
       });
-
-      if (!mountedRef.current) return;
-
       const data = await response.json();
 
       if (!response.ok || !data.url) {
         throw new Error(data.error || 'Failed to create checkout session');
       }
 
-      DodoPayments.Checkout.open({ checkoutUrl: data.url });
+      if (window.LemonSqueezy?.Url) {
+        window.LemonSqueezy.Url.Open(data.url);
+      } else {
+        window.location.assign(data.url);
+      }
     } catch (err) {
       if (!mountedRef.current) return;
       const message = err instanceof Error ? err.message : 'Checkout failed';

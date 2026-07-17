@@ -61,7 +61,7 @@ export default function TermsPage() {
 
         <h2>5. Subscription and Payments</h2>
         <p>
-          Payment processing is handled by Dodo Payments, our Merchant of Record. By subscribing,
+          Payment processing is handled by Lemon Squeezy, our Merchant of Record. By subscribing,
           you agree to:
         </p>
         <ul>

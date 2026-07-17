@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import type { Asset, GenerationResult } from '@/types/database';
 import { GenerationPanel } from '@/components/dashboard/generation-panel';
 import { OutputPanel } from '@/components/dashboard/output-panel';
+import { toast } from 'sonner';
 
 const MAX_FREE_ASSETS = 3;
 
@@ -40,38 +41,29 @@ export default function DashboardPage() {
     setError(null);
     setResult(null);
     setLastKeyword(keyword);
+    const progressToast = toast.loading('The 10-agent ring is analyzing your topic...');
     try {
-      const res = await fetch('/api/generate', {
+      const res = await fetch('/api/agents/coordinator', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ keyword, tier }),
+        body: JSON.stringify({ keyword, assetId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
       if (!data.blog_title || !data.blog_content) throw new Error('Incomplete response from AI engine');
       setResult(data as GenerationResult);
-      await supabase.from('content_history').insert({
-        keyword,
-        blog_title: data.blog_title,
-        blog_content: data.blog_content,
-        meta_description: data.meta_description,
-        keywords_list: data.keywords_list,
-        schema_json: data.schema_json,
-        social_linkedin: data.social_linkedin,
-        social_x: data.social_x,
-        asset_id: assetId,
-        tier,
-        user_id: user.id,
-      });
+      toast.success('Post package generated and saved.', { id: progressToast });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Generation failed');
+      const message = err instanceof Error ? err.message : 'Generation failed';
+      setError(message);
+      toast.error(message, { id: progressToast });
     } finally {
       setIsGenerating(false);
     }
   }
 
   return (
-    <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
       <GenerationPanel
         assets={assets}
         isGenerating={isGenerating}

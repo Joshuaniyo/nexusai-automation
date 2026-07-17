@@ -14,7 +14,7 @@ export default function RefundPage() {
       <LegalPage title="Refund & Cancellation Policy" lastUpdated="July 8, 2026">
         <p>
           This Refund and Cancellation Policy outlines the terms for subscription cancellations
-          and refund requests for NexusAI Automation services processed through Dodo Payments.
+          and refund requests for NexusAI Automation services processed through Lemon Squeezy.
         </p>
 
         <h2>1. Subscription Cancellation</h2>
@@ -68,7 +68,7 @@ export default function RefundPage() {
 
         <h2>5. Refund Processing</h2>
         <p>
-          Approved refunds are processed through Dodo Payments, our Merchant of Record.
+          Approved refunds are processed through Lemon Squeezy, our Merchant of Record.
           Refunds will be credited to your original payment method within:
         </p>
         <ul>

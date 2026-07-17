@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { cn } from '@/lib/utils';
-import { Zap, Globe, History, Settings, Sparkles, Crown, ChevronRight, LogOut, ExternalLink, Loader2 } from 'lucide-react';
+import { Zap, Globe, History, Settings, Sparkles, Crown, ChevronRight, LogOut, ExternalLink, Loader2, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useCheckout } from '@/hooks/use-checkout';
@@ -15,7 +15,7 @@ const nav = [
   { href: '/dashboard/history', label: 'Content History', icon: History },
 ];
 
-export function Sidebar() {
+export function Sidebar({ onNavigate, mobile = false }: { onNavigate?: () => void; mobile?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, tier, isPremium, signOut, loading } = useAuth();
@@ -28,7 +28,7 @@ export function Sidebar() {
 
   if (loading) {
     return (
-      <aside className="w-60 shrink-0 h-screen flex flex-col border-r" style={{ borderColor: 'hsl(220,14%,16%)', backgroundColor: 'hsl(220,16%,9%)' }}>
+      <aside className="flex h-full w-full flex-col border-r" style={{ borderColor: 'hsl(220,14%,16%)', backgroundColor: 'hsl(220,16%,9%)' }}>
         <div className="flex items-center justify-center h-full">
           <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
         </div>
@@ -37,9 +37,10 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-60 shrink-0 h-screen flex flex-col border-r" style={{ borderColor: 'hsl(220,14%,16%)', backgroundColor: 'hsl(220,16%,9%)' }}>
+    <aside className="flex h-full w-full flex-col border-r" style={{ borderColor: 'hsl(220,14%,16%)', backgroundColor: 'hsl(220,16%,9%)' }}>
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-3 px-4 py-4 border-b hover:opacity-80 transition-opacity" style={{ borderColor: 'hsl(220,14%,16%)' }}>
+      <div className="flex items-center border-b" style={{ borderColor: 'hsl(220,14%,16%)' }}>
+      <Link href="/" onClick={onNavigate} className="flex flex-1 items-center gap-3 px-4 py-4 hover:opacity-80 transition-opacity">
         <div className="w-8 h-8 rounded-lg flex items-center justify-center glow-cyan" style={{ background: 'linear-gradient(135deg, hsl(199,89%,48%), hsl(217,91%,60%))' }}>
           <Sparkles className="w-4 h-4 text-white" />
         </div>
@@ -48,6 +49,8 @@ export function Sidebar() {
           <p className="text-[10px] uppercase tracking-widest" style={{ color: 'hsl(215,16%,47%)' }}>Automation</p>
         </div>
       </Link>
+      {mobile && <button onClick={onNavigate} className="mr-3 rounded-lg p-2 text-slate-400 hover:bg-white/5 hover:text-white" aria-label="Close navigation"><X className="h-5 w-5" /></button>}
+      </div>
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
@@ -58,6 +61,7 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onNavigate}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
                 active
@@ -79,6 +83,7 @@ export function Sidebar() {
           <p className="text-[10px] font-semibold uppercase tracking-widest px-2 mb-3" style={{ color: 'hsl(215,16%,47%)' }}>Quick Links</p>
           <Link
             href="/pricing"
+            onClick={onNavigate}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity"
             style={{ color: 'hsl(215,16%,60%)' }}
           >

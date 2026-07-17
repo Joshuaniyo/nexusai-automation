@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { Toaster } from '@/components/ui/sonner';
 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={inter.className} style={{ backgroundColor: 'hsl(220,16%,6%)', color: 'hsl(210,20%,95%)', margin: 0 }}>
         {children}
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

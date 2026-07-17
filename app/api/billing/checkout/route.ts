@@ -1,109 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { lemonSqueezySetup, createCheckout } from '@lemonsqueezy/lemonsqueezy.js';
+import { createSupabaseServerClient } from '@/lib/auth';
+
+// Setup Lemon Squeezy
+const apiKey = process.env.LEMONSQUEEZY_API_KEY;
+if (apiKey) {
+  lemonSqueezySetup({ apiKey });
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const apiKey = process.env.DODO_PAYMENTS_API_KEY;
-    const productId = process.env.NEXT_PUBLIC_DODO_PRODUCT_ID;
+    const storeId = process.env.LEMONSQUEEZY_STORE_ID;
+    const monthlyVariantId = process.env.NEXT_PUBLIC_LEMONSQUEEZY_MONTHLY_VARIANT_ID;
+    const yearlyVariantId = process.env.NEXT_PUBLIC_LEMONSQUEEZY_YEARLY_VARIANT_ID;
 
-    if (!apiKey || !productId) {
-      console.error('Missing Dodo Payments configuration');
+    if (!apiKey || !storeId || !monthlyVariantId || !yearlyVariantId) {
+      console.error('Missing Lemon Squeezy credentials');
       return NextResponse.json({ error: 'Payment configuration missing' }, { status: 500 });
     }
 
+    const { supabase } = createSupabaseServerClient(req);
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user?.email) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
     const body = await req.json().catch(() => ({}));
-    const userId = body.userId || 'guest';
-    const email = body.email || 'customer@example.com';
+    const billingCycle = body.billingCycle === 'yearly' ? 'yearly' : 'monthly';
+    const variantId = billingCycle === 'yearly' ? yearlyVariantId : monthlyVariantId;
 
-    const checkoutResponse = await fetch('https://api.dodopayments.com/v1/checkout_sessions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        product_id: productId,
-        quantity: 1,
-        customer: {
-          email: email,
-          name: body.name || 'Customer',
-        },
-        metadata: {
-          userId: userId,
-          source: 'nexusai-automation',
-        },
-        return_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nexusai-automation-eosin.vercel.app'}/dashboard?upgrade=success`,
-      }),
-    });
+    const redirectUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/dashboard?upgrade=success`;
 
-    if (!checkoutResponse.ok) {
-      const errorData = await checkoutResponse.json().catch(() => ({}));
-      console.error('Dodo API error:', errorData);
-      return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });
+    const { data: checkoutData, error: checkoutError } = await createCheckout(
+      storeId,
+      variantId,
+      {
+        checkoutData: {
+          email: user.email,
+          name: typeof user.user_metadata.full_name === 'string'
+            ? user.user_metadata.full_name
+            : undefined,
+          custom: {
+            user_id: user.id,
+            billing_cycle: billingCycle,
+          },
+        },
+        productOptions: {
+          redirectUrl,
+        },
+        checkoutOptions: { embed: true },
+      }
+    );
+
+    if (checkoutError || !checkoutData) {
+      console.error('Lemon Squeezy API error:', checkoutError);
+      return NextResponse.json({ error: checkoutError?.message || 'Failed to create checkout session' }, { status: 500 });
     }
 
-    const checkout = await checkoutResponse.json();
-    const checkoutUrl = checkout.payment_url || checkout.url || checkout.checkout_url;
-
-    if (!checkoutUrl) {
-      console.error('No checkout URL in response:', checkout);
-      return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });
-    }
+    const checkoutUrl = checkoutData.data.attributes.url;
 
     return NextResponse.json({ url: checkoutUrl });
   } catch (err: unknown) {
     console.error('Checkout error:', err);
     const message = err instanceof Error ? err.message : 'Checkout creation failed';
     return NextResponse.json({ error: message }, { status: 500 });
-  }
-}
-
-export async function GET() {
-  try {
-    const apiKey = process.env.DODO_PAYMENTS_API_KEY;
-    const productId = process.env.NEXT_PUBLIC_DODO_PRODUCT_ID;
-
-    if (!apiKey || !productId) {
-      return NextResponse.redirect(new URL('/?error=configuration', 'https://nexusai-automation-eosin.vercel.app'));
-    }
-
-    const checkoutResponse = await fetch('https://api.dodopayments.com/v1/checkout_sessions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        product_id: productId,
-        quantity: 1,
-        customer: {
-          email: 'upgrade@nexusai-automation.com',
-          name: 'Upgrading User',
-        },
-        metadata: {
-          userId: 'pending',
-          source: 'nexusai-automation-pricing',
-        },
-        return_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nexusai-automation-eosin.vercel.app'}/dashboard?upgrade=success`,
-      }),
-    });
-
-    if (!checkoutResponse.ok) {
-      const errorData = await checkoutResponse.json().catch(() => ({}));
-      console.error('Dodo API error:', errorData);
-      return NextResponse.redirect(new URL('/pricing?error=checkout', 'https://nexusai-automation-eosin.vercel.app'));
-    }
-
-    const checkout = await checkoutResponse.json();
-    const checkoutUrl = checkout.payment_url || checkout.url || checkout.checkout_url;
-
-    if (!checkoutUrl) {
-      console.error('No checkout URL in response:', checkout);
-      return NextResponse.redirect(new URL('/pricing?error=checkout', 'https://nexusai-automation-eosin.vercel.app'));
-    }
-
-    return NextResponse.redirect(checkoutUrl);
-  } catch (err: unknown) {
-    console.error('Checkout redirect error:', err);
-    return NextResponse.redirect(new URL('/pricing?error=checkout', 'https://nexusai-automation-eosin.vercel.app'));
   }
 }

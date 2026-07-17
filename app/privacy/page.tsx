@@ -23,7 +23,7 @@ export default function PrivacyPage() {
         <p>We collect information you provide directly to us, including:</p>
         <ul>
           <li><strong>Account Information:</strong> Name, email address, and password when you create an account.</li>
-          <li><strong>Payment Information:</strong> Billing details processed securely through Dodo Payments, our Merchant of Record.</li>
+          <li><strong>Payment Information:</strong> Billing details processed securely through Lemon Squeezy, our Merchant of Record.</li>
           <li><strong>Content Data:</strong> Keywords, generated content, and assets you create using our platform.</li>
           <li><strong>Usage Data:</strong> Information about how you interact with our services, including feature usage and performance metrics.</li>
         </ul>
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
         <p>We use the information we collect to:</p>
         <ul>
           <li>Provide, maintain, and improve our AI content generation services</li>
-          <li>Process payments and manage subscriptions through Dodo Payments</li>
+          <li>Process payments and manage subscriptions through Lemon Squeezy</li>
           <li>Send you technical notices, updates, and support messages</li>
           <li>Respond to your comments, questions, and requests</li>
           <li>Monitor and analyze trends, usage, and activities</li>
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
         <p>
           We implement appropriate technical and organizational measures to protect your personal information
           against unauthorized access, alteration, disclosure, or destruction. Your payment information
-          is processed securely by Dodo Payments, which maintains PCI DSS compliance.
+          is processed securely by Lemon Squeezy, which maintains PCI DSS compliance.
         </p>
 
         <h2>4. Cookies and Tracking Technologies</h2>
@@ -55,7 +55,7 @@ export default function PrivacyPage() {
         <h2>5. Third-Party Services</h2>
         <p>We use the following third-party services:</p>
         <ul>
-          <li><strong>Dodo Payments:</strong> Payment processing and subscription management</li>
+          <li><strong>Lemon Squeezy:</strong> Payment processing and subscription management</li>
           <li><strong>Supabase:</strong> Database and authentication services</li>
           <li><strong>Google Gemini AI:</strong> AI content generation</li>
         </ul>

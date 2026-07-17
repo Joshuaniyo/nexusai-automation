@@ -45,7 +45,7 @@ export function GenerationPanel({ assets, isGenerating, onGenerate, tier, assetC
   }
 
   return (
-    <div style={{ width: '300px', flexShrink: 0, height: '100%', display: 'flex', flexDirection: 'column', borderRight: '1px solid hsl(220,14%,16%)', backgroundColor: 'hsl(220,16%,9%)', overflowY: 'auto' }}>
+    <div className="flex w-full shrink-0 flex-col overflow-y-auto border-b border-[hsl(220,14%,16%)] bg-[hsl(220,16%,9%)] lg:h-full lg:basis-80 lg:border-b-0 lg:border-r">
       {/* Header */}
       <div style={{ padding: '16px 20px', borderBottom: '1px solid hsl(220,14%,16%)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
