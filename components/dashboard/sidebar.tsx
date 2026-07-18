@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { cn } from '@/lib/utils';
-import { Zap, Globe, History, Settings, Sparkles, Crown, ChevronRight, LogOut, ExternalLink, Loader2, X } from 'lucide-react';
+import { Zap, Globe, History, Settings, Sparkles, Crown, ChevronRight, LogOut, ExternalLink, Loader2, X, Share2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useCheckout } from '@/hooks/use-checkout';
@@ -12,6 +12,7 @@ import { useCheckout } from '@/hooks/use-checkout';
 const nav = [
   { href: '/dashboard', label: 'Generate', icon: Zap, exact: true },
   { href: '/dashboard/assets', label: 'Asset Manager', icon: Globe },
+  { href: '/dashboard/social-integrations', label: 'Social Integrations', icon: Share2 },
   { href: '/dashboard/history', label: 'Content History', icon: History },
 ];
 

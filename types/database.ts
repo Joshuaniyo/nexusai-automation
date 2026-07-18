@@ -21,6 +21,16 @@ export interface ContentHistory {
   asset_id: string | null;
   user_id: string | null;
   tier: 'free' | 'premium';
+  delivery_type: 'webhook' | 'direct_social';
+  target_social_platforms: Array<'linkedin' | 'telegram'>;
+  created_at: string;
+}
+
+export interface SocialConnection {
+  id: string;
+  platform: 'linkedin' | 'telegram';
+  platform_account_name: string | null;
+  metadata: Record<string, unknown>;
   created_at: string;
 }
 

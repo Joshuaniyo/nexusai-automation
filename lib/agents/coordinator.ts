@@ -70,7 +70,9 @@ async function runGroundedTrendScout(
         body: JSON.stringify({
           system_instruction: { parts: [{ text: specialist.systemPrompt }] },
           contents: [{ role: 'user', parts: [{ text: JSON.stringify(input) }] }],
-          tools: [{ google_search: {} }],
+          ...(process.env.NEXT_PUBLIC_ENABLE_SEARCH_GROUNDING === 'true'
+            ? { tools: [{ google_search: {} }] }
+            : {}),
           generationConfig: { temperature, maxOutputTokens: 3072 },
         }),
         cache: 'no-store',

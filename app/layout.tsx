@@ -2,11 +2,15 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
+import { getSiteUrl } from '@/lib/site-url';
 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
+const siteUrl = getSiteUrl();
+const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://nexusai-automation-eosin.vercel.app'),
+  metadataBase: new URL(siteUrl),
   title: {
     default: 'NexusAI Automation — Scale AI Content for Teams & SaaS',
     template: '%s | NexusAI Automation',
@@ -16,6 +20,9 @@ export const metadata: Metadata = {
   authors: [{ name: 'NexusAI Automation' }],
   creator: 'NexusAI Automation',
   publisher: 'NexusAI Automation',
+  alternates: { canonical: '/' },
+  manifest: '/manifest.webmanifest',
+  ...(googleVerification ? { verification: { google: googleVerification } } : {}),
   robots: { index: true, follow: true },
   icons: {
     icon: '/favicon.svg',
@@ -25,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://nexusai-automation-eosin.vercel.app',
+    url: siteUrl,
     siteName: 'NexusAI Automation',
     title: 'NexusAI Automation — Scale AI Content for Teams & SaaS',
     description: 'Generate SEO-optimized blog content, JSON-LD schemas, and social posts at scale with Gemini AI.',
@@ -43,8 +50,8 @@ const orgSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'NexusAI Automation',
-  url: 'https://nexusai-automation-eosin.vercel.app',
-  logo: 'https://nexusai-automation-eosin.vercel.app/favicon.svg',
+  url: siteUrl,
+  logo: `${siteUrl}/favicon.svg`,
   description: 'Multi-tenant AI content automation SaaS platform powered by Gemini AI.',
   sameAs: [],
 };

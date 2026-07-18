@@ -41,6 +41,7 @@ export async function GET(req: NextRequest) {
     .from('content_history')
     .select('id, user_id, asset_id, keyword, blog_title, blog_content, meta_description, schema_json, social_posts, media_urls, deployment_targets, scheduled_for')
     .eq('deployment_status', 'queued')
+    .eq('delivery_type', 'webhook')
     .lte('scheduled_for', now)
     .order('scheduled_for', { ascending: true })
     .limit(25);
