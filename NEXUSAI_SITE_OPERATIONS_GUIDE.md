@@ -188,7 +188,7 @@ Failures set `deployment_status = failed` and write a diagnostic to `last_delive
 ## 12. Google Search Console test
 
 1. Configure Google as a Supabase Auth provider.
-2. Add the deployed `/auth/callback` URL to the allowed redirects.
+2. Add the deployed `/api/auth/callback` URL to the allowed redirects. Keep `/auth/callback` temporarily if older confirmation emails may still reference it.
 3. Allow the scope `https://www.googleapis.com/auth/webmasters.readonly`.
 4. Open **Asset Manager**.
 5. Click **Connect Google Search Console**.

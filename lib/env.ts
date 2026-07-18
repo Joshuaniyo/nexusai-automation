@@ -3,19 +3,18 @@
  * Handles Vercel deployments, custom domains, and localhost.
  */
 export function getBaseUrl(): string {
-  // Check for Vercel URL first (production/preview deployments)
-  if (process.env.NEXT_PUBLIC_VERCEL_URL) {
-    return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
-  }
-
-  // Check for manually configured site URL
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL;
-  }
-
-  // Fallback for browser environment
+  // Browser actions must follow the origin the user is actually visiting.
   if (typeof window !== 'undefined') {
     return window.location.origin;
+  }
+
+  // Server-rendered callers prefer the explicitly trusted production origin.
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '');
+  }
+
+  if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+    return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
   }
 
   // Default for SSR/local development
@@ -24,9 +23,9 @@ export function getBaseUrl(): string {
 
 /**
  * Get the OAuth redirect URL for authentication callbacks.
- * @param path - The callback path (default: '/auth/callback')
+ * @param path - The callback path (default: '/api/auth/callback')
  */
-export function getOAuthRedirectUrl(path: string = '/auth/callback'): string {
+export function getOAuthRedirectUrl(path: string = '/api/auth/callback'): string {
   return `${getBaseUrl()}${path}`;
 }
 

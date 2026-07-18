@@ -22,8 +22,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ connected: true, sites: payload.siteEntry ?? [] });
   }
 
-  const callback = new URL('/auth/callback', req.nextUrl.origin);
-  callback.searchParams.set('next', '/dashboard/assets?gsc=connected');
+  const callback = new URL('/api/auth/callback', req.nextUrl.origin);
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {

@@ -11,13 +11,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import { getBaseUrl } from '@/lib/env';
 
 function AuthForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const signup = searchParams.get('signup') === 'true';
-  const redirect = searchParams.get('redirect') || '/dashboard';
+  const requestedRedirect = searchParams.get('redirect') || '/dashboard';
+  const redirect = requestedRedirect.startsWith('/dashboard') ? requestedRedirect : '/dashboard';
   const errorParam = searchParams.get('error');
 
   const [tab, setTab] = useState<'signin' | 'signup'>(signup ? 'signup' : 'signin');
@@ -50,11 +50,11 @@ function AuthForm() {
   async function handleGoogleSignIn() {
     setGoogleLoading(true);
     try {
-      const baseUrl = getBaseUrl();
+      const origin = window.location.origin;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent(redirect)}`,
+          redirectTo: `${origin}/api/auth/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -113,7 +113,7 @@ function AuthForm() {
     }
 
     try {
-      const callbackUrl = `${getBaseUrl()}/auth/callback?next=${encodeURIComponent(redirect)}`;
+      const callbackUrl = `${window.location.origin}/api/auth/callback`;
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -158,7 +158,7 @@ function AuthForm() {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: `${getBaseUrl()}/auth/callback?next=/dashboard`,
+      redirectTo: `${window.location.origin}/api/auth/callback`,
     });
     if (error) {
       toast.error(error.message);

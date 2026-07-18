@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
 import { handleAuthCallback } from '@/lib/auth-callback';
 
-// Compatibility endpoint for confirmation links created before /api/auth/callback became canonical.
 export async function GET(request: NextRequest) {
   return handleAuthCallback(request);
 }
