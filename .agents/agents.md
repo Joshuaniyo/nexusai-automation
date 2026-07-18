@@ -13,7 +13,7 @@ Your goal is to transform this Bolt.new prototype into a robust, high-end SaaS w
 *   **Database**: Supabase PostgreSQL
 *   **Auth**: Supabase Auth (Magic Link, Credentials, Google OAuth)
 *   **Payments**: Lemon Squeezy (Replacing existing Dodo Payments setup)
-*   **AI & Image Engine**: Gemini 2.5 Flash (for Text) + Stable Diffusion or DALL-E/Pollinations (for instant image creation)
+*   **AI & Image Engine**: Gemini 3.5 Flash (for Text) + Stable Diffusion or DALL-E/Pollinations (for instant image creation)
 
 ## Resource Management (Free Tier Safeguard)
 *   Do not overwrite entire files unless requested. Suggest clean, targeted diffs and imports to conserve tokens.

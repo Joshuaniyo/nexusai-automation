@@ -84,7 +84,7 @@ Modern platforms like NexusAI Automation implement a sophisticated pipeline for 
 
 ### 1. Content Generation Layer
 
-The AI generation layer creates platform-appropriate content using engines like Gemini 2.5 Flash. Key considerations include:
+The AI generation layer creates platform-appropriate content using engines like Gemini 3.5 Flash. Key considerations include:
 - Tenant-specific brand voice and style guidelines;
 - Topic and keyword targeting based on tenant preferences;
 - Structured data generation (JSON-LD) for each content piece;
@@ -309,7 +309,7 @@ Document everything that makes your content unique:
 **Select Your Technology Stack**
 
 Essential components:
-- **AI Generation Engine**: Gemini 2.5 Flash, GPT-4, or Claude for content creation;
+- **AI Generation Engine**: Gemini 3.5 Flash, GPT-4, or Claude for content creation;
 - **Content Management**: Headless CMS or database for organization;
 - **Distribution Layer**: Webhooks, APIs, and automation tools;
 - **Quality Assurance**: Both automated checks and human review processes.

@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     const routed = rotateGeminiKey();
     const model = new GoogleGenerativeAI(routed.apiKey).getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.5-flash',
       systemInstruction: 'You are an Answer Engine Optimization auditor. Evaluate only the supplied content. Return JSON with sentiment_score (0-100), direct_answerability_ratio (0-100), citation_potential (0-100), semantic_entities (array of {name,type,relevance}), strengths (string array), recommendations (string array). Do not claim actual ranking or inclusion in any answer engine.',
       generationConfig: { responseMimeType: 'application/json', temperature: 0.2, maxOutputTokens: 2048 },
     });

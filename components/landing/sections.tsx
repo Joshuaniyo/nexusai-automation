@@ -104,7 +104,7 @@ export function Hero() {
           <div className="flex justify-center mb-6">
             <Badge variant="outline" className="bg-[hsl(220,14%,12%)] border-[hsl(199,89%,48%)]/30 text-cyan-400 px-4 py-1.5 animate-pulse">
               <Sparkles className="w-4 h-4 mr-2" />
-              Powered by Gemini 2.5 Flash AI
+              Create with Nexus AI
             </Badge>
           </div>
 

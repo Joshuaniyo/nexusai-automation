@@ -54,7 +54,7 @@ export function GenerationPanel({ assets, isGenerating, onGenerate, tier, assetC
           </div>
           <h1 style={{ fontSize: 13, fontWeight: 600, color: 'hsl(210,20%,95%)', margin: 0 }}>Generation Engine</h1>
         </div>
-        <p style={{ fontSize: 11, color: 'hsl(215,16%,47%)', marginLeft: 28, margin: '0 0 0 28px' }}>Powered by Gemini 2.5 Flash</p>
+        <p style={{ fontSize: 11, color: 'hsl(215,16%,47%)', marginLeft: 28, margin: '0 0 0 28px' }}>Create with Nexus AI</p>
       </div>
 
       {/* Tier badge */}
