@@ -52,6 +52,51 @@ function stringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string' && item.trim() !== '') : [];
 }
 
+async function runGroundedTrendScout(
+  input: JsonObject,
+  trace: AgentTraceItem[],
+  temperature: number,
+): Promise<JsonObject> {
+  const specialist = getSpecialist('trend_scout');
+  const maxAttempts = Math.min(3, availableGeminiKeys().length || 1);
+  let lastError: unknown;
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const routed = rotateGeminiKey(attempt);
+    const startedAt = Date.now();
+    try {
+      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': routed.apiKey },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: specialist.systemPrompt }] },
+          contents: [{ role: 'user', parts: [{ text: JSON.stringify(input) }] }],
+          tools: [{ google_search: {} }],
+          generationConfig: { temperature, maxOutputTokens: 3072 },
+        }),
+        cache: 'no-store',
+      });
+      if (!response.ok) throw new Error(`Grounded Gemini request failed (${response.status}): ${(await response.text()).slice(0, 240)}`);
+      const payload = await response.json() as {
+        candidates?: Array<{
+          content?: { parts?: Array<{ text?: string }> };
+          groundingMetadata?: {
+            webSearchQueries?: string[];
+            groundingChunks?: Array<{ web?: { uri?: string; title?: string } }>;
+          };
+        }>;
+      };
+      const candidate = payload.candidates?.[0];
+      const text = candidate?.content?.parts?.map((part) => part.text ?? '').join('') ?? '';
+      const output = parseJson(text);
+      const sources = (candidate?.groundingMetadata?.groundingChunks ?? []).flatMap((chunk) => chunk.web?.uri ? [{ title: chunk.web.title ?? chunk.web.uri, url: chunk.web.uri }] : []);
+      output.grounding = { search_queries: candidate?.groundingMetadata?.webSearchQueries ?? [], sources };
+      trace.push({ id: 'trend_scout', name: specialist.name, keySlot: routed.slot, durationMs: Date.now() - startedAt, status: 'completed' });
+      return output;
+    } catch (error) { lastError = error; }
+  }
+  throw lastError instanceof Error ? lastError : new Error('Grounded Trend Scout failed.');
+}
+
 async function runAgent(
   id: SpecialistId,
   input: JsonObject,
@@ -59,6 +104,7 @@ async function runAgent(
   temperature = 0.55,
 ): Promise<JsonObject> {
   const specialist = getSpecialist(id);
+  if (id === 'trend_scout') return runGroundedTrendScout(input, trace, temperature);
   const maxAttempts = Math.min(3, availableGeminiKeys().length || 1);
   let lastError: unknown;
 
