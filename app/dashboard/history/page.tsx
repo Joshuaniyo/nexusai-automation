@@ -7,7 +7,6 @@ import type { ContentHistory, Asset } from '@/types/database';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -137,7 +136,7 @@ export default function HistoryPage() {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent style={{ backgroundColor: 'hsl(220,16%,9%)', border: '1px solid hsl(220,14%,20%)', maxWidth: 640, maxHeight: '85vh', display: 'flex', flexDirection: 'column', padding: 0 }}>
+        <DialogContent className="max-h-[80vh] overflow-hidden" style={{ backgroundColor: 'hsl(220,16%,9%)', border: '1px solid hsl(220,14%,20%)', maxWidth: 640, display: 'flex', flexDirection: 'column', padding: 0 }}>
           <DialogHeader style={{ padding: '16px 20px', borderBottom: '1px solid hsl(220,14%,16%)', flexShrink: 0 }}>
             <DialogTitle style={{ fontSize: 13, fontWeight: 700, color: 'hsl(210,20%,95%)', display: 'flex', alignItems: 'center', gap: 8 }}>
               <FileText style={{ width: 14, height: 14, color: 'hsl(199,89%,65%)' }} />
@@ -146,7 +145,7 @@ export default function HistoryPage() {
             {selected && <p style={{ fontSize: 11, color: 'hsl(215,16%,47%)', margin: '4px 0 0 0' }}>{new Date(selected.created_at).toLocaleString()}</p>}
           </DialogHeader>
           {selected && (
-            <Tabs defaultValue="seo" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <Tabs defaultValue="seo" className="min-h-0" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               <div style={{ padding: '10px 20px 0', borderBottom: '1px solid hsl(220,14%,16%)', flexShrink: 0 }}>
                 <TabsList style={{ backgroundColor: 'hsl(220,14%,12%)', border: '1px solid hsl(220,14%,20%)', height: 32 }}>
                   <TabsTrigger value="seo" style={{ fontSize: 12, height: 26 }} className="data-[state=active]:bg-cyan-500/10 data-[state=active]:text-cyan-400"><Search style={{ width: 11, height: 11, marginRight: 4 }} />SEO</TabsTrigger>
@@ -154,7 +153,7 @@ export default function HistoryPage() {
                   <TabsTrigger value="social" style={{ fontSize: 12, height: 26 }} className="data-[state=active]:bg-cyan-500/10 data-[state=active]:text-cyan-400"><Share2 style={{ width: 11, height: 11, marginRight: 4 }} />Social</TabsTrigger>
                 </TabsList>
               </div>
-              <ScrollArea style={{ flex: 1 }}>
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 <TabsContent value="seo" style={{ padding: 20, margin: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -203,7 +202,7 @@ export default function HistoryPage() {
                     </div>
                   ))}
                 </TabsContent>
-              </ScrollArea>
+              </div>
             </Tabs>
           )}
         </DialogContent>

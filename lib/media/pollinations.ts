@@ -1,3 +1,5 @@
+import { toPollinationsProxyUrl } from '@/lib/media/pollinations-url';
+
 const POLLINATIONS_API_URL = 'https://gen.pollinations.ai/v1/images/generations';
 
 export type SocialPlatform = 'blog' | 'x' | 'linkedin' | 'instagram';
@@ -47,5 +49,5 @@ export async function generatePollinationsImage(prompt: string, platform: Social
   const payload = await response.json() as { data?: Array<{ url?: string }> };
   const url = payload.data?.[0]?.url;
   if (!url) throw new Error('Pollinations returned no image URL.');
-  return url;
+  return toPollinationsProxyUrl(url);
 }

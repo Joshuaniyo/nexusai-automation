@@ -45,11 +45,25 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    setSidebarCollapsed(window.localStorage.getItem('nexus-sidebar-collapsed') === 'true');
+  }, []);
+
+  function toggleSidebar() {
+    setSidebarCollapsed((current) => {
+      const next = !current;
+      window.localStorage.setItem('nexus-sidebar-collapsed', String(next));
+      return next;
+    });
+  }
+
   return (
     <AuthProvider>
       <ProtectedRoute>
         <div className="flex h-[100dvh] w-full overflow-hidden bg-[hsl(220,16%,6%)]">
-          <div className="hidden h-full w-60 shrink-0 lg:block"><Sidebar /></div>
+          <div className={`hidden h-full shrink-0 transition-[width] duration-300 ease-out lg:block ${sidebarCollapsed ? 'w-16' : 'w-60'}`}><Sidebar collapsed={sidebarCollapsed} onToggleCollapse={toggleSidebar} /></div>
           <div className={`fixed inset-0 z-50 transition lg:hidden ${mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`} aria-hidden={!mobileOpen}>
             <button aria-label="Close navigation" onClick={() => setMobileOpen(false)} className={`absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity ${mobileOpen ? 'opacity-100' : 'opacity-0'}`} />
             <div className={`relative h-full w-[min(86vw,20rem)] shadow-2xl transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>

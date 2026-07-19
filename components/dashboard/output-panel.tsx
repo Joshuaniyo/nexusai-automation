@@ -3,13 +3,14 @@
 /* eslint-disable @next/next/no-img-element -- Pollinations returns short-lived CDN hosts that cannot be statically allow-listed. */
 
 import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, Check, Copy, FileText, ImageIcon, Loader2, RefreshCw, ShieldCheck, Sparkles } from 'lucide-react';
+import { AlertCircle, Check, Copy, FileText, ImageIcon, Loader2, RefreshCw, Share2, ShieldCheck, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import type { GenerationResult } from '@/types/database';
 import { sanitizeHtml } from '@/lib/security';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { CompetitiveTools } from '@/components/dashboard/competitive-tools';
+import { toPollinationsProxyUrl } from '@/lib/media/pollinations-url';
 
 interface Props {
   result: GenerationResult | null;
@@ -122,7 +123,7 @@ function SocialCard({
         <CopyButton text={copy} />
       </div>
       <div className="relative aspect-video overflow-hidden bg-slate-950">
-        <img src={url} alt={`${label} generated post artwork`} className="h-full w-full object-cover" />
+        <img src={toPollinationsProxyUrl(url)} alt={`${label} generated post artwork`} className="h-full w-full object-cover" />
         {regenerating && <div className="absolute inset-0 flex items-center justify-center bg-slate-950/75 backdrop-blur-sm"><Loader2 className="h-6 w-6 animate-spin text-cyan-300" /></div>}
       </div>
       <div className="space-y-4 p-4">
@@ -145,6 +146,9 @@ function SocialCard({
 
 export function OutputPanel({ result, isGenerating, error, keyword }: Props) {
   const cleanBlog = useMemo(() => sanitizeHtml(result?.blog_content ?? ''), [result?.blog_content]);
+  const [activeView, setActiveView] = useState<'blog' | 'social'>('blog');
+
+  useEffect(() => { setActiveView('blog'); }, [result?.package_id]);
 
   if (isGenerating) return <div className="min-w-0 flex-1"><AgentSkeleton /></div>;
   if (error) return (
@@ -179,13 +183,19 @@ export function OutputPanel({ result, isGenerating, error, keyword }: Props) {
         </div>
       </header>
 
-      <div className="grid items-start gap-5 p-5 2xl:grid-cols-[minmax(0,1.15fr)_minmax(380px,0.85fr)]">
-        <article className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 shadow-2xl shadow-black/20">
+      <div className="border-b border-slate-800 bg-slate-950/60 px-5 py-3">
+        <div className="inline-grid w-full max-w-md grid-cols-2 rounded-xl border border-slate-800 bg-slate-950 p-1">
+          <button type="button" onClick={() => setActiveView('blog')} aria-pressed={activeView === 'blog'} className={`flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-xs font-medium transition ${activeView === 'blog' ? 'bg-cyan-500/15 text-cyan-200 shadow-sm' : 'text-slate-500 hover:text-slate-200'}`}><FileText className="h-3.5 w-3.5" />Blog Post</button>
+          <button type="button" onClick={() => setActiveView('social')} aria-pressed={activeView === 'social'} className={`flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-xs font-medium transition ${activeView === 'social' ? 'bg-cyan-500/15 text-cyan-200 shadow-sm' : 'text-slate-500 hover:text-slate-200'}`}><Share2 className="h-3.5 w-3.5" />Social Media Posts</button>
+        </div>
+      </div>
+
+      {activeView === 'blog' ? <div className="p-5"><article className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 shadow-2xl shadow-black/20">
           <div className="flex items-center justify-between border-b border-slate-800 px-5 py-4">
             <div className="flex items-center gap-2"><FileText className="h-4 w-4 text-cyan-300" /><span className="text-xs font-semibold text-white">Generated blog post</span></div>
             <CopyButton text={result.blog_content} />
           </div>
-          <img src={result.media_urls.blog} alt="Generated blog hero artwork" className="aspect-[1.9/1] w-full object-cover" />
+          <img src={toPollinationsProxyUrl(result.media_urls.blog)} alt="Generated blog hero artwork" className="aspect-[1.9/1] w-full object-cover" />
           <div className="p-5 md:p-7">
             <h1 className="text-2xl font-bold leading-tight text-white">{result.blog_title}</h1>
             <p className="mt-3 rounded-lg border border-cyan-400/10 bg-cyan-400/5 p-3 text-xs leading-5 text-cyan-100/70">{result.meta_description}</p>
@@ -195,14 +205,10 @@ export function OutputPanel({ result, isGenerating, error, keyword }: Props) {
               <pre className="mt-3 overflow-x-auto text-[11px] leading-5 text-cyan-200/80">{JSON.stringify(result.schema_json, null, 2)}</pre>
             </details>
           </div>
-        </article>
-
-        <section className="space-y-5">
+        </article></div> : <section className="grid items-start gap-5 p-5 xl:grid-cols-2">
           <SocialCard platform="x" label="X / Twitter" copy={result.social_posts.x.text} initialPrompt={result.visual_prompts.x} initialUrl={result.media_urls.x} packageId={result.package_id} />
           <SocialCard platform="linkedin" label="LinkedIn" copy={result.social_posts.linkedin.text} initialPrompt={result.visual_prompts.linkedin} initialUrl={result.media_urls.linkedin} packageId={result.package_id} />
-          <SocialCard platform="instagram" label="Instagram / Facebook" copy={result.social_posts.instagram.caption} initialPrompt={result.visual_prompts.instagram} initialUrl={result.media_urls.instagram} packageId={result.package_id} />
-        </section>
-      </div>
+        </section>}
       <CompetitiveTools result={result} />
     </div>
   );
