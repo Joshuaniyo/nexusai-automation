@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { generatePollinationsImage } from '@/lib/media/pollinations';
 import { getSpecialist, type SpecialistId } from '@/lib/agents/specialists';
 import { availableGeminiKeys, rotateGeminiKey } from '@/lib/agents/key-router';
+import { parseAgentJson } from '@/lib/agents/json-response';
 
 type JsonObject = Record<string, unknown>;
 
@@ -31,16 +32,6 @@ export interface CoordinatedPackage {
   visual_prompts: { blog: string; x: string; linkedin: string; instagram: string };
   quality_audit: JsonObject;
   agent_trace: AgentTraceItem[];
-}
-
-function parseJson(text: string): JsonObject {
-  try {
-    return JSON.parse(text) as JsonObject;
-  } catch {
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('Agent returned invalid JSON.');
-    return JSON.parse(match[0]) as JsonObject;
-  }
 }
 
 function stringValue(value: unknown, field: string): string {
@@ -73,7 +64,7 @@ async function runGroundedTrendScout(
           ...(process.env.NEXT_PUBLIC_ENABLE_SEARCH_GROUNDING === 'true'
             ? { tools: [{ google_search: {} }] }
             : {}),
-          generationConfig: { temperature, maxOutputTokens: 3072 },
+          generationConfig: { responseMimeType: 'application/json', temperature, maxOutputTokens: 3072 },
         }),
         cache: 'no-store',
       });
@@ -89,7 +80,7 @@ async function runGroundedTrendScout(
       };
       const candidate = payload.candidates?.[0];
       const text = candidate?.content?.parts?.map((part) => part.text ?? '').join('') ?? '';
-      const output = parseJson(text);
+      const output = parseAgentJson(text);
       const sources = (candidate?.groundingMetadata?.groundingChunks ?? []).flatMap((chunk) => chunk.web?.uri ? [{ title: chunk.web.title ?? chunk.web.uri, url: chunk.web.uri }] : []);
       output.grounding = { search_queries: candidate?.groundingMetadata?.webSearchQueries ?? [], sources };
       trace.push({ id: 'trend_scout', name: specialist.name, keySlot: routed.slot, durationMs: Date.now() - startedAt, status: 'completed' });
@@ -124,7 +115,7 @@ async function runAgent(
         },
       });
       const response = await model.generateContent(JSON.stringify(input));
-      const output = parseJson(response.response.text());
+      const output = parseAgentJson(response.response.text());
       trace.push({
         id,
         name: specialist.name,

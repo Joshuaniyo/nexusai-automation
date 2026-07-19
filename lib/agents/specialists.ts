@@ -16,7 +16,7 @@ export interface SpecialistDefinition {
   systemPrompt: string;
 }
 
-const JSON_ONLY = 'Return one valid JSON object only. Never use markdown fences or add commentary outside the JSON.';
+const JSON_ONLY = 'Return one valid, unescaped JSON object only. Do not include any conversational text, explanations, or markdown code blocks like ```json. Return raw JSON only.';
 
 export const SPECIALISTS: readonly SpecialistDefinition[] = [
   {
