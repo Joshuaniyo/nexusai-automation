@@ -57,8 +57,8 @@ const faqs = [
     a: 'We accept all major credit cards through Lemon Squeezy, our Merchant of Record. Payment processing is secure and PCI-compliant.',
   },
   {
-    q: 'Is there a free trial for Premium?',
-    a: 'Yes! We offer a 14-day money-back guarantee. If you\'re not satisfied with Premium, contact us within 14 days for a full refund.',
+    q: 'Can I use NexusAI without a Premium subscription?',
+    a: 'Yes. The Free Tier is available without a time limit or credit card. Premium purchases are governed by our published Refund Policy.',
   },
   {
     q: 'What happens to my data if I downgrade?',

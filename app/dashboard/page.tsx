@@ -3,20 +3,17 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { supabase } from '@/lib/supabase';
-import type { Asset, GenerationResult } from '@/types/database';
+import type { Asset } from '@/types/database';
 import { GenerationPanel } from '@/components/dashboard/generation-panel';
 import { OutputPanel } from '@/components/dashboard/output-panel';
-import { toast } from 'sonner';
+import { useGeneration } from '@/context/generation-context';
 
 const MAX_FREE_ASSETS = 3;
 
 export default function DashboardPage() {
   const { tier, isPremium, user } = useAuth();
+  const { result, isGenerating, error, lastKeyword, generate, clearGeneration } = useGeneration();
   const [assets, setAssets] = useState<Asset[]>([]);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [result, setResult] = useState<GenerationResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [lastKeyword, setLastKeyword] = useState('');
 
   useEffect(() => {
     if (!user) return;
@@ -37,29 +34,7 @@ export default function DashboardPage() {
 
   async function handleGenerate(keyword: string, assetId: string | null) {
     if (!user) return;
-    setIsGenerating(true);
-    setError(null);
-    setResult(null);
-    setLastKeyword(keyword);
-    const progressToast = toast.loading('The 10-agent ring is analyzing your topic...');
-    try {
-      const res = await fetch('/api/agents/coordinator', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ keyword, assetId }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
-      if (!data.blog_title || !data.blog_content) throw new Error('Incomplete response from AI engine');
-      setResult(data as GenerationResult);
-      toast.success('Post package generated and saved.', { id: progressToast });
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Generation failed';
-      setError(message);
-      toast.error(message, { id: progressToast });
-    } finally {
-      setIsGenerating(false);
-    }
+    await generate(keyword, assetId);
   }
 
   return (
@@ -72,7 +47,7 @@ export default function DashboardPage() {
         assetCount={assetCount}
         isPremium={isPremium}
       />
-      <OutputPanel result={result} isGenerating={isGenerating} error={error} keyword={lastKeyword} />
+      <OutputPanel result={result} isGenerating={isGenerating} error={error} keyword={lastKeyword} onGenerateNew={clearGeneration} />
     </div>
   );
 }

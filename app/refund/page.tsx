@@ -1,113 +1,28 @@
+import type { Metadata } from 'next';
 import { LegalPage } from '@/components/legal/legal-page';
 
+export const metadata: Metadata = { title: 'Refund and Cancellation Policy', description: 'Subscription cancellation, billing-cycle, refund, and digital service credit terms for NexusAI Automation.' };
+
 export default function RefundPage() {
-  return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: `
-        .prose-invert h2 { font-size: 1.25rem; font-weight: 600; color: hsl(210,20%,95%); margin-top: 2rem; margin-bottom: 0.75rem; }
-        .prose-invert h3 { font-size: 1.1rem; font-weight: 600; color: hsl(210,20%,95%); margin-top: 1.5rem; margin-bottom: 0.5rem; }
-        .prose-invert p { font-size: 0.95rem; color: hsl(215,16%,65%); line-height: 1.7; margin-bottom: 1rem; }
-        .prose-invert ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
-        .prose-invert li { font-size: 0.95rem; color: hsl(215,16%,65%); margin-bottom: 0.5rem; }
-        .prose-invert strong { color: hsl(210,20%,95%); font-weight: 500; }
-      ` }} />
-      <LegalPage title="Refund & Cancellation Policy" lastUpdated="July 8, 2026">
-        <p>
-          This Refund and Cancellation Policy outlines the terms for subscription cancellations
-          and refund requests for NexusAI Automation services processed through Lemon Squeezy.
-        </p>
+  return <LegalPage title="Refund & Cancellation Policy" lastUpdated="July 19, 2026">
+    <p>This policy applies to paid NexusAI Automation subscriptions and prepaid digital service credits. Lemon Squeezy acts as our Merchant of Record and may administer billing, taxes, invoices, cancellations, and approved refunds.</p>
 
-        <h2>1. Subscription Cancellation</h2>
-        <p>
-          You may cancel your subscription at any time. Upon cancellation:
-        </p>
-        <ul>
-          <li>Your subscription will remain active until the end of the current billing period</li>
-          <li>You will not be charged for subsequent billing cycles</li>
-          <li>You will retain access to premium features until the subscription period ends</li>
-          <li>Your generated content and assets will remain accessible</li>
-        </ul>
+    <h2>1. Permanent Free Tier</h2><p>The Free Tier is not a timed trial and does not require cancellation. Feature and usage limits shown on the Pricing page apply.</p>
 
-        <h2>2. 14-Day Refund Policy</h2>
-        <p>
-          We offer a 14-day money-back guarantee for new subscriptions. If you are not satisfied
-          with our service, you may request a full refund within 14 days of your initial purchase.
-        </p>
-        <p>
-          To request a refund:
-        </p>
-        <ul>
-          <li>Contact our support team at refunds@nexusai-automation.com</li>
-          <li>Provide your account email and order ID</li>
-          <li>Refunds are processed within 5-10 business days</li>
-        </ul>
+    <h2>2. Subscription Cancellation</h2><p>You may cancel a paid subscription at any time through the available billing-management flow or by contacting <a href="mailto:refunds@nexusai-automation.com">refunds@nexusai-automation.com</a>. Cancellation prevents the next renewal. Unless law requires otherwise, Premium access remains available through the end of the already-paid billing period, and unused time is not automatically prorated or credited.</p>
 
-        <h2>3. Non-Refundable Scenarios</h2>
-        <p>The following situations are not eligible for refunds:</p>
-        <ul>
-          <li>Requests made after the 14-day refund window</li>
-          <li>Subscriptions that have been renewed (auto-renewals)</li>
-          <li>Violations of our Terms of Service resulting in account termination</li>
-          <li>Partial months or unused subscription time</li>
-          <li>Downgrade requests from Premium to Free tier</li>
-        </ul>
+    <h2>3. Refund Eligibility</h2><p>Refund requests must be submitted within 14 calendar days of the initial Premium purchase. We may approve a full or partial refund when:</p><ul><li>the purchase was duplicated;</li><li>a verified unauthorized purchase is reported promptly;</li><li>a material technical defect prevented meaningful use and support could not restore access within a reasonable period; or</li><li>applicable consumer law requires a refund.</li></ul><p>Submitting a request does not guarantee approval. We may consider account usage, generated output, consumed provider costs, prior refunds, abuse, and evidence supplied with the request.</p>
 
-        <h2>4. Chargeback Policy</h2>
-        <p>
-          If you believe a charge was unauthorized, please contact us first before initiating
-          a chargeback with your bank. We are committed to resolving disputes fairly and promptly.
-        </p>
-        <p>
-          Initiating a chargeback without contacting us may result in:
-        </p>
-        <ul>
-          <li>Immediate suspension of your account</li>
-          <li>Loss of access to generated content and assets</li>
-          <li>Inability to create new accounts in the future</li>
-        </ul>
+    <h2>4. Renewals, Partial Periods, and Plan Changes</h2><p>Renewal charges are generally non-refundable once a new billing period begins, except where required by law or where a duplicate or verified billing error occurred. We do not ordinarily refund partial months, partial years, unused scheduled time, downgrades, or failure to cancel before renewal. Upgrades and downgrades follow the timing and proration displayed by the checkout or billing portal.</p>
 
-        <h2>5. Refund Processing</h2>
-        <p>
-          Approved refunds are processed through Lemon Squeezy, our Merchant of Record.
-          Refunds will be credited to your original payment method within:
-        </p>
-        <ul>
-          <li>Credit/Debit Cards: 5-10 business days</li>
-          <li>Digital Wallets: 3-5 business days</li>
-        </ul>
+    <h2>5. Digital Service Credits</h2><p>Purchased or promotional generation credits are digital service units, not stored monetary value. Credits already consumed for AI, image, delivery, or other provider operations are non-refundable. Unused purchased credits may be considered only when included in an otherwise eligible refund request. Promotional, bonus, expired, or complimentary credits have no cash value and are not refundable or transferable.</p>
 
-        <h2>6. Subscription Renewals</h2>
-        <p>
-          Subscriptions automatically renew at the end of each billing period unless cancelled.
-          You will receive an email reminder 7 days before each renewal.
-        </p>
+    <h2>6. Exclusions</h2><p>Refunds may be denied for requests outside the eligibility window, dissatisfaction with generated style after substantial use, search-ranking or traffic fluctuations, third-party platform restrictions, account suspension for policy violations, misuse, or costs caused by inaccurate integration configuration. These exclusions do not limit non-waivable statutory rights.</p>
 
-        <h2>7. Plan Changes</h2>
-        <p>
-          When changing plans:
-        </p>
-        <ul>
-          <li>Upgrades take effect immediately</li>
-          <li>Downgrades take effect at the end of the current billing period</li>
-          <li>No prorated refunds for downgrades</li>
-        </ul>
+    <h2>7. Request and Processing</h2><p>Email <a href="mailto:refunds@nexusai-automation.com">refunds@nexusai-automation.com</a> with the account email, Lemon Squeezy order or invoice identifier, purchase date, reason, and relevant troubleshooting details. Approved refunds are returned through the original payment method by the Merchant of Record. Bank and payment-network processing time varies and is outside NexusAI&apos;s control.</p>
 
-        <h2>8. Contact for Refunds</h2>
-        <p>
-          For all refund and cancellation requests, contact:
-          <br />
-          Email: refunds@nexusai-automation.com
-          <br />
-          Response time: 24-48 hours
-        </p>
+    <h2>8. Charge Disputes</h2><p>Please contact us promptly about an unrecognized or incorrect charge so we can investigate. Nothing in this policy prevents you from exercising rights available through your bank, payment provider, or applicable law.</p>
 
-        <h2>9. Dispute Resolution</h2>
-        <p>
-          If you have any issues with charges or refunds, please contact our support team.
-          We are committed to resolving all disputes fairly and will work with you to find
-          a satisfactory solution.
-        </p>
-      </LegalPage>
-    </>
-  );
+    <h2>9. Contact</h2><p>Cancellation and refund requests: <a href="mailto:refunds@nexusai-automation.com">refunds@nexusai-automation.com</a>.</p>
+  </LegalPage>;
 }

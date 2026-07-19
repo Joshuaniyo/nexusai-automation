@@ -298,7 +298,7 @@ function AuthForm() {
             <CardHeader>
               <CardTitle className="text-white text-xl">Create your account</CardTitle>
               <CardDescription className="text-[hsl(215,16%,60%)]">
-                Start your free trial. No credit card required.
+                Create your permanent Free Tier account. No credit card required.
               </CardDescription>
             </CardHeader>
             <CardContent>

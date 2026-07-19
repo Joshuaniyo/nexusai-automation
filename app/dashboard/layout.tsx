@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { Loader2, Menu, Sparkles } from 'lucide-react';
+import { GenerationProvider } from '@/context/generation-context';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, loading } = useAuth();
@@ -76,7 +77,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <span className="flex items-center gap-2 text-sm font-semibold text-white"><Sparkles className="h-4 w-4 text-cyan-400" />NexusAI</span>
               <span className="w-9" />
             </header>
-            {children}
+            <GenerationProvider>{children}</GenerationProvider>
           </main>
         </div>
       </ProtectedRoute>

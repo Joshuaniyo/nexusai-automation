@@ -199,7 +199,7 @@ export default async function BlogPostPage({ params }: Props) {
           </p>
           <Button size="lg" asChild className="bg-orange-500 hover:bg-orange-600 text-white">
             <Link href="/auth?signup=true">
-              Start Free Trial
+              Get Started Free
             </Link>
           </Button>
         </div>

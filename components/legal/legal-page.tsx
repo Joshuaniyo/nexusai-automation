@@ -39,10 +39,12 @@ export function LegalPage({ title, lastUpdated, children }: LegalPageProps) {
         </div>
       </main>
       <footer className="border-t border-[hsl(220,14%,16%)] py-8 mt-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center text-[hsl(215,16%,50%)] text-sm">
-          © {new Date().getFullYear()} NexusAI Automation. All rights reserved.
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center text-[hsl(215,16%,50%)] text-sm space-y-3">
+          <div className="flex flex-wrap justify-center gap-4"><Link href="/privacy" className="hover:text-white">Privacy</Link><Link href="/terms" className="hover:text-white">Terms</Link><Link href="/refund" className="hover:text-white">Refunds</Link><Link href="/docs" className="hover:text-white">Documentation</Link><Link href="/contact" className="hover:text-white">Contact</Link></div>
+          <p>© {new Date().getFullYear()} NexusAI Automation. All rights reserved.</p>
         </div>
       </footer>
+      <style dangerouslySetInnerHTML={{ __html: proseStyles }} />
     </div>
   );
 }

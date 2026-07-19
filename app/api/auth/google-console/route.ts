@@ -6,7 +6,7 @@ const WEBMASTERS_SCOPE = 'https://www.googleapis.com/auth/webmasters.readonly';
 export async function GET(req: NextRequest) {
   const { supabase } = createSupabaseServerClient(req);
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.redirect(new URL('/auth?redirect=/dashboard/assets', req.url));
+  if (!user) return NextResponse.redirect(new URL('/auth?redirect=/dashboard/analytics', req.url));
 
   if (req.nextUrl.searchParams.get('action') === 'status') {
     const { data: { session } } = await supabase.auth.getSession();
@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
   }
 
   const callback = new URL('/api/auth/callback', req.nextUrl.origin);
+  callback.searchParams.set('next', '/dashboard/analytics');
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -31,6 +32,6 @@ export async function GET(req: NextRequest) {
       queryParams: { access_type: 'offline', prompt: 'consent', include_granted_scopes: 'true' },
     },
   });
-  if (error || !data.url) return NextResponse.redirect(new URL('/dashboard/assets?gsc=error', req.url));
+  if (error || !data.url) return NextResponse.redirect(new URL('/dashboard/analytics?gsc=error', req.url));
   return NextResponse.redirect(data.url);
 }

@@ -122,7 +122,7 @@ export function Hero() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <Button size="lg" onClick={() => router.push('/auth?signup=true')}
               className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-6 text-lg shadow-lg shadow-orange-500/25 transition-all hover:scale-105">
-              Start Free Trial
+              Get Started Free
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
             <Button size="lg" variant="outline" asChild
@@ -347,6 +347,7 @@ export function Footer() {
               <li><Link href="/#features" className="text-[hsl(215,16%,60%)] hover:text-white transition-colors">Features</Link></li>
               <li><Link href="/pricing" className="text-[hsl(215,16%,60%)] hover:text-white transition-colors">Pricing</Link></li>
               <li><Link href="/blog" className="text-[hsl(215,16%,60%)] hover:text-white transition-colors">Blog</Link></li>
+              <li><Link href="/docs" className="text-[hsl(215,16%,60%)] hover:text-white transition-colors">Documentation</Link></li>
               <li><Link href="/dashboard" className="text-[hsl(215,16%,60%)] hover:text-white transition-colors">Demo</Link></li>
             </ul>
           </div>

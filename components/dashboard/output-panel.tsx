@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element -- Pollinations returns short-lived CDN hosts that cannot be statically allow-listed. */
 
 import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, Check, Copy, FileText, ImageIcon, Loader2, RefreshCw, Share2, ShieldCheck, Sparkles } from 'lucide-react';
+import { AlertCircle, Check, Copy, FilePlus2, FileText, ImageIcon, Loader2, RefreshCw, Send, Share2, ShieldCheck, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import type { GenerationResult } from '@/types/database';
 import { sanitizeHtml } from '@/lib/security';
@@ -11,12 +11,14 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { CompetitiveTools } from '@/components/dashboard/competitive-tools';
 import { toPollinationsProxyUrl } from '@/lib/media/pollinations-url';
+import { PublishContentModal } from '@/components/dashboard/publish-content-modal';
 
 interface Props {
   result: GenerationResult | null;
   isGenerating: boolean;
   error: string | null;
   keyword: string;
+  onGenerateNew: () => void;
 }
 
 type Platform = 'x' | 'linkedin' | 'instagram';
@@ -144,9 +146,10 @@ function SocialCard({
   );
 }
 
-export function OutputPanel({ result, isGenerating, error, keyword }: Props) {
+export function OutputPanel({ result, isGenerating, error, keyword, onGenerateNew }: Props) {
   const cleanBlog = useMemo(() => sanitizeHtml(result?.blog_content ?? ''), [result?.blog_content]);
   const [activeView, setActiveView] = useState<'blog' | 'social'>('blog');
+  const [publishOpen, setPublishOpen] = useState(false);
 
   useEffect(() => { setActiveView('blog'); }, [result?.package_id]);
 
@@ -183,11 +186,12 @@ export function OutputPanel({ result, isGenerating, error, keyword }: Props) {
         </div>
       </header>
 
-      <div className="border-b border-slate-800 bg-slate-950/60 px-5 py-3">
+      <div className="flex flex-col gap-3 border-b border-slate-800 bg-slate-950/60 px-5 py-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="inline-grid w-full max-w-md grid-cols-2 rounded-xl border border-slate-800 bg-slate-950 p-1">
           <button type="button" onClick={() => setActiveView('blog')} aria-pressed={activeView === 'blog'} className={`flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-xs font-medium transition ${activeView === 'blog' ? 'bg-cyan-500/15 text-cyan-200 shadow-sm' : 'text-slate-500 hover:text-slate-200'}`}><FileText className="h-3.5 w-3.5" />Blog Post</button>
           <button type="button" onClick={() => setActiveView('social')} aria-pressed={activeView === 'social'} className={`flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-xs font-medium transition ${activeView === 'social' ? 'bg-cyan-500/15 text-cyan-200 shadow-sm' : 'text-slate-500 hover:text-slate-200'}`}><Share2 className="h-3.5 w-3.5" />Social Media Posts</button>
         </div>
+        <div className="flex flex-col gap-2 sm:flex-row"><Button type="button" variant="outline" onClick={onGenerateNew} className="border-slate-700 text-slate-300"><FilePlus2 className="mr-2 h-4 w-4" />Generate New Content</Button><Button type="button" onClick={() => setPublishOpen(true)} className="bg-cyan-500 font-semibold text-slate-950 shadow-lg shadow-cyan-500/10 hover:bg-cyan-400"><Send className="mr-2 h-4 w-4" />Publish / Sync Content</Button></div>
       </div>
 
       {activeView === 'blog' ? <div className="p-5"><article className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 shadow-2xl shadow-black/20">
@@ -210,6 +214,7 @@ export function OutputPanel({ result, isGenerating, error, keyword }: Props) {
           <SocialCard platform="linkedin" label="LinkedIn" copy={result.social_posts.linkedin.text} initialPrompt={result.visual_prompts.linkedin} initialUrl={result.media_urls.linkedin} packageId={result.package_id} />
         </section>}
       <CompetitiveTools result={result} />
+      <PublishContentModal result={result} open={publishOpen} onOpenChange={setPublishOpen} />
     </div>
   );
 }

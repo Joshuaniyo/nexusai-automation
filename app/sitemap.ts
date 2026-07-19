@@ -6,7 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = getSiteUrl();
   const publicPages = [
     ['/', 1, 'weekly'], ['/pricing', 0.9, 'monthly'], ['/blog', 0.9, 'weekly'],
-    ['/about', 0.7, 'monthly'], ['/contact', 0.6, 'monthly'], ['/privacy', 0.3, 'yearly'],
+    ['/about', 0.7, 'monthly'], ['/contact', 0.6, 'monthly'], ['/docs', 0.8, 'monthly'], ['/privacy', 0.3, 'yearly'],
     ['/terms', 0.3, 'yearly'], ['/refund', 0.3, 'yearly'],
   ] as const;
   return [

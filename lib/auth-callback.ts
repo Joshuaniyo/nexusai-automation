@@ -20,9 +20,11 @@ export async function handleAuthCallback(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const origin = resolveOrigin(requestUrl);
   const code = requestUrl.searchParams.get('code');
+  const requestedDestination = requestUrl.searchParams.get('next');
+  const destination = requestedDestination?.startsWith('/dashboard') ? requestedDestination : '/dashboard';
 
   if (code) {
-    const response = NextResponse.redirect(new URL('/dashboard', origin));
+    const response = NextResponse.redirect(new URL(destination, origin));
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

@@ -148,7 +148,7 @@ export default function BlogPage() {
           </p>
           <Button size="lg" asChild className="bg-orange-500 hover:bg-orange-600 text-white">
             <Link href="/auth?signup=true">
-              Start Free Trial
+              Get Started Free
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
           </Button>
